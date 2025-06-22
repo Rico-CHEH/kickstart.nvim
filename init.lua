@@ -75,6 +75,9 @@ vim.opt.scrolloff = 10
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- NOTE: This is to disable Treesitter for latex
+-- vim.api.nvim_create_autocmd({ 'FileType' }, { pattern = 'tex', group = nil, command = 'TSBufDisable highlight' })
+
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -176,6 +179,45 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+
+  {
+    'sirver/ultisnips',
+    lazy = true,
+    init = function()
+      vim.g.UltiSnipsExpandTrigger = '<tab>'
+      vim.g.UltiSnipsJumpForwardTrigger = '<tab>'
+      vim.g.UltiSnipsJumpBackwardTrigger = '<tab>'
+    end,
+  },
+  {
+    'lervag/vimtex',
+    lazy = false, -- we don't want to lazy load VimTeX
+    -- tag = "v2.15", -- uncomment to pin to a specific release
+    init = function()
+      -- VimTeX configuration goes here, e.g.
+      vim.g.vimtex_view_general_viewer = 'C:/Users/Admin/AppData/Local/SumatraPDF/SumatraPDF.exe'
+      vim.g.vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
+      vim.g.tex_flavor = 'latex'
+      vim.g.vimtex_quickfix_mode = 0
+      vim.o.conceallevel = 1
+      vim.g.vimtex_syntax_enabled = true
+      vim.g.vimtex_syntax_conceal = {
+        accents = 1,
+        ligatures = 0,
+        cites = 0,
+        fancy = 1,
+        spacing = 0,
+        greek = 1,
+        math_bound = 1,
+        math_delimiters = 1,
+        math_fracs = 0,
+        math_super_sub = 0,
+        math_symbols = 1,
+        sections = 0,
+        styles = 0,
+      }
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
