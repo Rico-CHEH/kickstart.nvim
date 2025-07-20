@@ -592,13 +592,13 @@ require('lazy').setup({
 
   { -- Autoformat
     'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
+    event = { 'BufWritePost' },
     cmd = { 'ConformInfo' },
     keys = {
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_fallback = true }
+          require('conform').format { async = true, lsp_fallback = true, stop_after_first = true }
         end,
         mode = '',
         desc = '[F]ormat buffer',
@@ -610,17 +610,21 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, python = true }
         return {
           timeout_ms = 500,
           lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+          stop_after_first = true,
         }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
         clangd = { 'clang-format' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = {
+          { exe = 'autopep8', args = { '--indent-size=4' } },
+        },
+
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -879,6 +883,19 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+})
+
+-- Force 4-space indent for Python (overrides vim-sleuth)
+vim.api.nvim_create_augroup('ForcePyIndent', { clear = true })
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPost', 'FileType' }, {
+  group = 'ForcePyIndent',
+  pattern = '*.py',
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.tabstop = 4
+  end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
