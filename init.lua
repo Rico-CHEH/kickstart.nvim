@@ -101,10 +101,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal & insert mode
-vim.keymap.set({ 'n', 'i' }, '<left>', '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set({ 'n', 'i' }, '<right>', '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set({ 'n', 'i' }, '<up>', '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set({ 'n', 'i' }, '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set({ 'n' }, '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set({ 'n' }, '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set({ 'n' }, '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set({ 'n' }, '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -183,11 +183,12 @@ require('lazy').setup({
 
   {
     'sirver/ultisnips',
-    lazy = true,
+    lazy = false,
     init = function()
       vim.g.UltiSnipsExpandTrigger = '<tab>'
       vim.g.UltiSnipsJumpForwardTrigger = '<tab>'
-      vim.g.UltiSnipsJumpBackwardTrigger = '<tab>'
+      vim.g.UltiSnipsJumpBackwardTrigger = '<s-tab>'
+      vim.g.UltiSnipsSnippetDirectories = { 'UltiSnips' }
     end,
   },
   {
@@ -667,7 +668,8 @@ require('lazy').setup({
       --  nvim-cmp does not ship with all sources by default. They are split
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-path',
+      -- Adds autocompletion to path, but I find it intrusive
+      -- 'hrsh7th/cmp-path',
     },
     config = function()
       -- See `:help cmp`
@@ -898,5 +900,17 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPost', 'FileType' }, {
   end,
 })
 
+-- Spell checking for .tex files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'tex',
+  callback = function(args)
+    vim.opt_local.spell = true
+    vim.opt_local.spelllang = 'en_us'
+    vim.keymap.set('i', '<c-j>', '<c-g>u<Esc>[s1z=`]a<c-g>u', {
+      desc = 'Fix last spelling error',
+      buffer = args.buf,
+    })
+  end,
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
