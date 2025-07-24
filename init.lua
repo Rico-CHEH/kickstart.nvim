@@ -141,6 +141,18 @@ if not vim.uv.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+-- Setting virtual_text and for errors and warnings
+vim.diagnostic.config {
+  virtual_text = {
+    prefix = '■', -- this is your desired square symbol
+    spacing = 2, -- space between icon and text
+  },
+  signs = true, -- signs in gutter (e.g. │⛔)
+  underline = true, -- squiggly underline for errors
+  update_in_insert = false, -- don't show diagnostics while typing
+  severity_sort = true, -- sort by severity (errors on top)
+}
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
